@@ -81,5 +81,3 @@ if mls_input:
 
 
         st.markdown(f'<iframe src="data:application/pdf;base64,{pdf_data_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
-
-
