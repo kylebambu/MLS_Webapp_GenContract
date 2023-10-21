@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from utils import *
 import fillpdf
 from fillpdf import fillpdfs
+from io import BytesIO
+import base64
 
 st.header("MLS Offer Generator")
 mls_input = st.text_input("MLS Number:")
@@ -75,9 +77,22 @@ if mls_input:
 
         output_pdf = "modified_form.pdf"
 
-        fillpdfs.write_fillable_pdf("Residential Purchase Contract.pdf", 'output.pdf', data_dict=dict, flatten=False)
+        #fillpdfs.write_fillable_pdf("Residential Purchase Contract.pdf", 'output.pdf', data_dict=dict, flatten=False)
         
-        pdf_data_url = pdf_to_data_url('output.pdf')
+        #pdf_data_url = pdf_to_data_url('output.pdf')
 
 
-        st.markdown(f'<iframe src="data:application/pdf;base64,{pdf_data_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
+        #st.markdown(f'<iframe src="data:application/pdf;base64,{pdf_data_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
+
+        output_pdf = BytesIO()
+        fillpdfs.write_fillable_pdf(template_pdf, output_pdf, data_dict=dict, flatten=False)
+
+        # Display the generated PDF in Streamlit
+        pdf_data = output_pdf.getvalue()
+        pdf_data_base64 = base64.b64encode(pdf_data).decode("utf-8")
+        pdf_data_url = f"data:application/pdf;base64,{pdf_data_base64}"
+        st.markdown(f'<iframe src="{pdf_data_url}" width="700" height="500"></iframe>', unsafe_allow_html=True)
+
+        # Offer a download link for the generated PDF
+        st.write("Download the generated PDF:")
+        st.download_button("Download PDF", pdf_data, key="download_pdf", file_name="generated.pdf")
